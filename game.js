@@ -1,41 +1,79 @@
-const canvas = document.querySelector('#game');
-const game = canvas.getContext('2d');
+const canvas = document.querySelector("#game");
+const game = canvas.getContext("2d");
+const btnUp = document.querySelector("#up");
+const btnLeft = document.querySelector("#left");
+const btnRight = document.querySelector("#right");
+const btnDown = document.querySelector("#down");
 
-window.addEventListener('load', startGame);
+let canvasSize;
+let elementsSize;
 
-function startGame() {
-  let canvasSize;
+window.addEventListener("load", setCanvasSize);
+window.addEventListener("resize", setCanvasSize);
 
+function setCanvasSize() {
   if (window.innerHeight > window.innerWidth) {
     canvasSize = window.innerWidth * 0.8;
   } else {
     canvasSize = window.innerHeight * 0.8;
   }
-  
-  canvas.setAttribute('width', canvasSize);
-  canvas.setAttribute('height', canvasSize);
-  
-  const elementsSize = canvasSize / 10;
 
+  canvas.setAttribute("width", canvasSize);
+  canvas.setAttribute("height", canvasSize);
+
+  elementsSize = canvasSize / 10;
+
+  startGame();
+}
+
+function startGame() {
   console.log({ canvasSize, elementsSize });
 
-  game.font = elementsSize + 'px Verdana';
-  game.textAlign = 'end';
+  game.font = elementsSize + "px Verdana";
+  game.textAlign = "end";
 
-  for (let i = 1; i <= 10; i++) {
-    game.fillText(emojis['X'], elementsSize * i, elementsSize );
-  }
-  
-  // window.innerHeight
-  // window.innerWidth
-  
-  // game.fillRect(0,50,100,100);
-  // game.clearRect(50,50,50,50);
-  // game.clearRect()
-  // game.clearRect(0,0,50,50);
+  const map = maps[0];
+  const mapRows = map.trim().split("\n");
+  const mapRowCols = mapRows.map((row) => row.trim().split(""));
 
-  // game.font = '25px Verdana'
-  // game.fillStyle = 'purple';
-  // game.textAlign = 'center';
-  // game.fillText('Platzi', 25, 25);
+  mapRowCols.forEach((row,rowI) => {
+    row.forEach((col,colI) => {
+        const emoji = emojis[col];
+        const posX = elementsSize * (colI +1.2 );
+        const posY = elementsSize * (rowI +0.8 );
+        game.fillText(emoji,posX,posY); 
+    });
+  });
+
+}
+
+window.addEventListener('keydown', moveBykeys);
+btnUp.addEventListener('click', moveUp);
+btnLeft.addEventListener('click', moveLeft);
+btnRight.addEventListener('click', moveRight);
+btnDown.addEventListener('click', moveDown);
+
+function moveBykeys(event){
+    if(event.key == 'ArrowUp'){
+        moveUp();
+    }else if(event.key == 'ArrowLeft'){
+        moveLeft()
+    }else if(event.key == 'ArrowRight'){
+        moveRight()
+    }else if(event.key == 'ArrowDown'){
+        moveDown()
+    }
+}
+
+function moveUp() {
+    console.log("me quiero mover hacia arriba");
+}
+function moveLeft() {
+    console.log("me quiero mover hacia la izquierda");
+}
+function moveRight() {
+    console.log("me quiero mover hacia la derecha");
+}
+function moveDown() {
+    console.log("me quiero mover hacia abajo");
 }
