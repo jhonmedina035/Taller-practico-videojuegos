@@ -7,11 +7,18 @@ const btnDown = document.querySelector("#down");
 
 let canvasSize;
 let elementsSize;
+let level = 0;
 
 const playerPosition = {
     x: undefined,
     y: undefined
 }
+const giftPosition ={
+    x:undefined,
+    y:undefined
+}
+let bombas=[];
+
 
 window.addEventListener("load", setCanvasSize);
 window.addEventListener("resize", setCanvasSize);
@@ -32,14 +39,17 @@ function setCanvasSize() {
 }
 
 function startGame() {
-  console.log({ canvasSize, elementsSize });
-
   game.font = elementsSize + "px Verdana";
   game.textAlign = "end";
+  const map = maps[level];
 
-  const map = maps[0];
+  if(!map){
+    gameWin();
+    return;
+  }
   const mapRows = map.trim().split("\n");
   const mapRowCols = mapRows.map((row) => row.trim().split(""));
+  bombas = [];
   game.clearRect(0,0,canvasSize,canvasSize);  
   mapRowCols.forEach((row,rowI) => {
     row.forEach((col,colI) => {
@@ -47,18 +57,57 @@ function startGame() {
         const posX = elementsSize * (colI +1.2 );
         const posY = elementsSize * (rowI +0.8 );
 
-        if(col == 'O' && playerPosition.y == undefined){
-            playerPosition.x = posX;
-            playerPosition.y = posY;
-            console.log(playerPosition);
+        if(col == 'O'){
+            if(playerPosition.y == undefined && playerPosition.x == undefined){
+                playerPosition.x = posX;
+                playerPosition.y = posY;  
+            }  
+        }
+        if(col == 'I'){ 
+                giftPosition.x = posX;
+                giftPosition.y = posY;     
+        }
+        if(col == 'X'){   
+            bombas.push({
+                x:posX,
+                y:posY,
+            }) 
         }
         game.fillText(emoji,posX,posY); 
     });
   });
   movePlayer()
 }
+function levenWin(){
+    console.log(" sibiste de nivel");
+    level ++;
+    startGame();
+}
+function levenLouse(){
+    console.log("Has chocado con un enemigo")
+}
+function gameWin(){
+    console.log("has termando el juego")
+}
+
 
 function movePlayer(){
+    const giftCollisionX = Math.trunc(playerPosition.x) == Math.trunc(giftPosition.x);
+    const giftCollisionY = Math.trunc(playerPosition.y) == Math.trunc(giftPosition.y);
+    const giftCollision = giftCollisionX && giftCollisionY;
+    if(giftCollision){
+        levenWin();  
+    }
+    const enemyCollision = bombas.find(enemy =>{
+      const enemyCollisionx = Math.trunc(enemy.x) == Math.trunc(playerPosition.x)
+      const enemyCollisiony = Math.trunc(enemy.y) == Math.trunc(playerPosition.y)
+      return enemyCollisionx && enemyCollisiony
+    });
+    if(enemyCollision){
+        levenLouse();
+    }
+    
+    
     game.fillText(emojis['PLAYER'], playerPosition.x, playerPosition.y);
 }
 
@@ -86,8 +135,7 @@ function moveLeft() {
     if ((playerPosition.x - elementsSize)> elementsSize) {
         playerPosition.x -=elementsSize;
         startGame(); 
-    }
-    
+    }  
 }
 function moveRight() {
     if ((playerPosition.x + elementsSize)<(canvasSize + elementsSize) ){
