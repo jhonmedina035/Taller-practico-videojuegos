@@ -5,9 +5,11 @@ const btnLeft = document.querySelector("#left");
 const btnRight = document.querySelector("#right");
 const btnDown = document.querySelector("#down");
 
+
 let canvasSize;
 let elementsSize;
 let level = 0;
+let lives = 3;
 
 const playerPosition = {
     x: undefined,
@@ -83,11 +85,21 @@ function levenWin(){
     level ++;
     startGame();
 }
-function levenLouse(){
-    console.log("Has chocado con un enemigo")
+function levenFail(){
+    if(lives > 1){
+        lives --;
+        
+    }else{
+        lives = 3;
+        level = 0;
+        console.log("ya valiste ... ");
+    }
+    playerPosition.x = undefined
+    playerPosition.y = undefined    
+    startGame();
 }
 function gameWin(){
-    console.log("has termando el juego")
+    console.log("has termando el juego");
 }
 
 
@@ -104,7 +116,7 @@ function movePlayer(){
       return enemyCollisionx && enemyCollisiony
     });
     if(enemyCollision){
-        levenLouse();
+        levenFail();
     }
     
     
