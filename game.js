@@ -4,12 +4,20 @@ const btnUp = document.querySelector("#up");
 const btnLeft = document.querySelector("#left");
 const btnRight = document.querySelector("#right");
 const btnDown = document.querySelector("#down");
-
+const spanLives = document.querySelector('#spanLives');
+const spanTime = document.querySelector('#spanTime');
+const spanRecor = document.querySelector('#spanRecor')
+const result = document.querySelector('#result')
 
 let canvasSize;
 let elementsSize;
 let level = 0;
 let lives = 3;
+let timeStart = undefined;
+let timePlayer;
+let timeInterval;
+let recor = undefined;
+let bombas=[];
 
 const playerPosition = {
     x: undefined,
@@ -19,8 +27,6 @@ const giftPosition ={
     x:undefined,
     y:undefined
 }
-let bombas=[];
-
 
 window.addEventListener("load", setCanvasSize);
 window.addEventListener("resize", setCanvasSize);
@@ -39,7 +45,6 @@ function setCanvasSize() {
 
   startGame();
 }
-
 function startGame() {
   game.font = elementsSize + "px Verdana";
   game.textAlign = "end";
@@ -49,6 +54,13 @@ function startGame() {
     gameWin();
     return;
   }
+  
+  if(!timeStart){
+    timeStart = Date.now()
+    timeInterval = setInterval(showTime, 100);
+    showRecort()  
+  }
+  
   const mapRows = map.trim().split("\n");
   const mapRowCols = mapRows.map((row) => row.trim().split(""));
   bombas = [];
@@ -75,34 +87,54 @@ function startGame() {
                 y:posY,
             }) 
         }
-        game.fillText(emoji,posX,posY); 
+        game.fillText(emoji,posX,posY);
     });
   });
-  movePlayer()
+  showLives();
+  movePlayer();
 }
 function levenWin(){
-    console.log(" sibiste de nivel");
+    console.log("sibiste de nivel");
     level ++;
     startGame();
 }
 function levenFail(){
     if(lives > 1){
-        lives --;
-        
+        lives --;    
     }else{
         lives = 3;
         level = 0;
-        console.log("ya valiste ... ");
+        timeStart = undefined;
     }
     playerPosition.x = undefined
     playerPosition.y = undefined    
     startGame();
 }
 function gameWin(){
-    console.log("has termando el juego");
+    clearInterval(timeInterval);
+    const recorTime = localStorage.getItem('recor');
+    const playerTime =  Date.now() - timeStart
+    if(recorTime){
+        
+        if(recorTime >=  playerTime){
+            localStorage.setItem('recor',playerTime);
+            result.innerHTML = 'Lograste superar el recort :)'
+        }else{
+            result.innerHTML = 'No lograste romper el recor :('
+        }
+    }else{
+        localStorage.setItem('recor', playerTime);
+        result.innerHTML = 'Es tu primera vez ? Animo !!'
+    }
 }
-
-
+function showLives(){
+    const heartsArray = Array(lives).fill(emojis['HEART']);
+    spanLives.innerHTML="";
+    heartsArray.forEach(heart => spanLives.append(heart));
+}
+function showTime(){
+    spanTime.innerHTML = Date.now() - timeStart;
+}
 function movePlayer(){
     const giftCollisionX = Math.trunc(playerPosition.x) == Math.trunc(giftPosition.x);
     const giftCollisionY = Math.trunc(playerPosition.y) == Math.trunc(giftPosition.y);
@@ -121,6 +153,9 @@ function movePlayer(){
     
     
     game.fillText(emojis['PLAYER'], playerPosition.x, playerPosition.y);
+}
+function showRecort(){
+    spanRecor.innerHTML= localStorage.getItem('recor');
 }
 
 window.addEventListener('keydown', moveBykeys);
