@@ -42,6 +42,8 @@ function setCanvasSize() {
   canvas.setAttribute("height", canvasSize);
 
   elementsSize = canvasSize / 10;
+  playerPosition.x =undefined;
+  playerPosition.y =undefined;
 
   startGame();
 }
@@ -126,6 +128,12 @@ function gameWin(){
         localStorage.setItem('recor', playerTime);
         result.innerHTML = 'Es tu primera vez ? Animo !!'
     }
+
+    game.clearRect(0,0,canvasSize,canvasSize);
+    game.fillText("Has ganado ",(canvasSize/2),(canvasSize/2));
+    game.textAlign = "center";
+
+  
 }
 function showLives(){
     const heartsArray = Array(lives).fill(emojis['HEART']);
